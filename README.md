@@ -14,3 +14,6 @@ Run Servers:
 In one terminal: cd backend && npm start
 
 In another terminal: cd frontend && npm run dev
+
+
+#Try the game on https://guess-country-multiplayer.onrender.com/
