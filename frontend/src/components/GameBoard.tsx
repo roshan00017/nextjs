@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useSocket } from "../contexts/SocketContext";
 import { InitialGameData, RoundOverData, GameOverData } from "../types";
-
+import WinnerPopup from "./winnerpopup";
 interface PlayerDisplay {
   id: string;
   username: string;
@@ -38,7 +38,7 @@ const MAX_ROUNDS = 3;
 const MAX_GUESS_ATTEMPTS_PER_ROUND = 3;
 const MAX_FACTS_PER_ROUND = 3;
 
-const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
+const GameBoard: React.FC<GameBoardProps> = ({}) => {
   const { socket, isConnected } = useSocket();
 
   const [gameId, setGameId] = useState<string | null>(null);
@@ -54,6 +54,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
   const [isGameOver, setIsGameOver] = useState(false);
   const [overallWinnerId, setOverallWinnerId] = useState<string | null>(null);
   const [myPlayerId, setMyPlayerId] = useState<string | null>(null);
+  const [showWinnerPopup, setShowWinnerPopup] = useState(false);
+  const [winnerName, setWinnerName] = useState<string | null>(null);
+  const [isGameWinner, setIsGameWinner] = useState(false);
 
   const [myGuessAttempts, setMyGuessAttempts] = useState(
     MAX_GUESS_ATTEMPTS_PER_ROUND
@@ -206,6 +209,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
           };
         })
       );
+      if (data.winnerId) {
+        const winner = players.find((p) => p.id === data.winnerId);
+        setWinnerName(winner ? winner.username : "Someone");
+        setShowWinnerPopup(true);
+        setIsGameWinner(false);
+      }
       addMessage(
         `Round ${data.currentRound} is over! The country was ${data.correctCountry}.`
       );
@@ -243,6 +252,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
           };
         })
       );
+      if (data.overallWinnerId) {
+        const winner = players.find((p) => p.id === data.overallWinnerId);
+        setWinnerName(winner ? winner.username : "Someone");
+        setShowWinnerPopup(true);
+        setIsGameWinner(true);
+      }
       addMessage("Game Over!");
       if (data.overallWinnerId) {
         const winner = players.find((p) => p.id === data.overallWinnerId);
@@ -439,6 +454,12 @@ const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
         }`}
       >
         {/* Player 1 Card (My Player) */}
+        <WinnerPopup
+          winnerName={winnerName || ""}
+          show={showWinnerPopup}
+          isGameOver={isGameWinner}
+          onClose={() => setShowWinnerPopup(false)}
+        />
         <div
           className={`bg-gray-800 rounded-lg shadow-lg p-6 ${
             myPlayer?.id === roundWinnerId ? "border-4 border-green-500" : ""
