@@ -422,13 +422,22 @@ const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
   const canRequestFact =
     canActInRound && (myFactsUsed ?? 0) < MAX_FACTS_PER_ROUND;
 
+  // Inside your GameBoard.tsx component, replace the existing return() block with this:
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white px-4 py-8 md:px-8 lg:px-20">
       <h1 className="text-4xl font-bold mb-6 text-yellow-400">
         GuessMatesCountry
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mb-8">
+      <div
+        className={`grid grid-cols-1 md:grid-cols-2 gap-8 w-full mb-8 ${
+          myPlayer?.id === roundWinnerId ? "border-4 border-green-500" : ""
+        } ${
+          overallWinnerId === myPlayer?.id && isGameOver
+            ? "border-4 border-yellow-500"
+            : ""
+        }`}
+      >
         {/* Player 1 Card (My Player) */}
         <div
           className={`bg-gray-800 rounded-lg shadow-lg p-6 ${
@@ -446,6 +455,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
           {!isRoundOver && !isGameOver && (
             <>
               <p className="text-lg">Guesses left: {myGuessAttempts}</p>
+              {/* Ensure myFactsUsed is here if you want to display it */}
             </>
           )}
         </div>
@@ -469,7 +479,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-4xl mb-8">
+      <div className="bg-gray-800 rounded-lg shadow-lg p-6 w-full mb-8">
         <h2 className="text-2xl font-semibold mb-4">Game Info</h2>
         <p className="text-lg">
           Round: {currentRound} / {MAX_ROUNDS}
@@ -569,7 +579,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ myUsername }) => {
         )}
       </div>
 
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-4xl h-48 overflow-y-auto mb-8">
+      <div className="bg-gray-800 rounded-lg shadow-lg p-6 w-full h-48 overflow-y-auto mb-8">
         <h2 className="text-2xl font-semibold mb-4">Messages</h2>
         <div className="flex flex-col space-y-1">
           {messages.map((msg, index) => (

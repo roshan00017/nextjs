@@ -30,8 +30,6 @@ const HomePage: React.FC = () => {
     socket.on("player:matched", (gameId: string) => {
       console.log(`Matched! Game ID: ${gameId}`);
       setWaitingForOpponent(false);
-      // Instead of just setting inGame, we might want to navigate to a dynamic game page
-      // For simplicity in this example, we'll just set inGame true.
       setInGame(true);
       // In a real app, you might navigate: router.push(`/game/${gameId}`);
     });
@@ -57,7 +55,9 @@ const HomePage: React.FC = () => {
   // If no username, show username input
   if (!username) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        {" "}
+        {/* Add background to match */}
         <UsernameInput
           onUsernameSet={handleUsernameSet}
           initialUsername={username}
@@ -66,18 +66,21 @@ const HomePage: React.FC = () => {
     );
   }
 
-  // If in game, render GameBoard directly (or a GamePage if you had more specific game page logic)
+  // === IMPORTANT CHANGE HERE ===
+  // If in game, render GameBoard directly without the centering wrapper
   if (inGame) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <GameBoard myUsername={username} />
-      </div>
+      // The GameBoard itself has the min-h-screen and background,
+      // and its internal elements have the responsive padding.
+      <GameBoard myUsername={username} />
     );
   }
 
   // Otherwise, show the lobby
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+      {" "}
+      {/* Add background to match */}
       <Lobby
         username={username}
         onGameStart={() => setInGame(true)} // This line will be effectively triggered by 'player:matched'
